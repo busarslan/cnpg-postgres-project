@@ -18,3 +18,12 @@
 - YAML'da "accessModes: -ReadWriteOnce" yazildiginda (tireden sonra bosluk
   olmadan), YAML bunu liste degil string olarak yorumluyor ve hata veriyor.
   Dogrusu: "- ReadWriteOnce" (tire + bosluk + deger).
+
+## ObjectStore + Cluster Entegrasyonu - BASARILI
+- minio-creds secret'i olusturuldu (database namespace).
+- ObjectStore CR'i (minio-store) tanimlandi.
+- Cluster'a spec.plugins ile barman-cloud.cloudnative-pg.io eklendi,
+  retentionPolicy: "7d" ayarlandi.
+- Bu degisiklik rolling restart tetikledi: once replikalar (postgres-lab-3,
+  postgres-lab-2), en son primary (postgres-lab-1) yeniden baslatildi.
+- ContinuousArchiving condition'i True donuyor - WAL arsivleme calisiyor.
