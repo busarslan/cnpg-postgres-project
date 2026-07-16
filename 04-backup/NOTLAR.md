@@ -37,3 +37,20 @@
   bir sure eski cron'a gore gorunebilir (status henuz yeniden hesaplanmamis),
   bu bir hata degil, birkac dakika icinde kendiliginden duzeliyor.
 - retentionPolicy: "7d" zaten cluster'in plugin parametrelerinde tanimliydi.
+
+## PITR Testi - BASARILI
+- Test verisi eklendi, clock_timestamp() ile tam zaman damgasi alindi
+  (2026-07-16 10:52:47.972764+00).
+- DROP TABLE ile veri kasitli silindi.
+- Not: pg_switch_wal() busarslan (superuser olmayan) kullanicisiyla
+  CALISMADI - "permission denied for function pg_switch_wal" hatasi alindi.
+  Bu beklenen bir durum (enableSuperuserAccess: false). WAL zaten CNPG'nin
+  otomatik archive_timeout mekanizmasiyla kendiliginden arsivleniyor,
+  manuel switch zorunlu degil.
+- recoveryTarget.targetTime ile yeni bir cluster'a (postgres-restored)
+  restore edildi - 50 saniyede tamamlandi.
+- Veri EKSIKSIZ geri geldi: tablo ve "korunmasi gereken kayit" satiri
+  dogrulandi.
+- Sonuc: PITR mekanizmasi, superuser erisimi olmadan (production'a daha
+  yakin bir kimlik dogrulama modeliyle) basariyla calisti.
+- Test sonrasi postgres-restored cluster'i ve PVC'si temizlendi.
