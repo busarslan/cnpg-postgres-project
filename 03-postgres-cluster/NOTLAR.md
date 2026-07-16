@@ -40,3 +40,14 @@
   "peer authentication failed" sorunu bu sefer yasanmadi.
 - Test komutu:
   kubectl exec -it postgres-lab-2 -n database -- psql -h 127.0.0.1 -U busarslan -d myapp -c "SELECT current_user, current_database();"
+
+## Failover Testi - BASARILI
+- postgres-lab-2 (primary) silindi -> operator otomatik olarak postgres-lab-1'i
+  yeni primary secti.
+- Surec: Cluster in healthy state -> Failing over -> Waiting for the instances
+  to become active -> Cluster in healthy state (yeni primary: postgres-lab-1)
+- ONEMLI: Silinen pod (postgres-lab-2), yeniden olusturulduğunda AYNI zone'a
+  (zone-b, pg-lab-worker2) geri yerlesti - topologySpreadConstraints kurali
+  failover sonrasi da korunuyor, zone dagilimi bozulmadi.
+- Sonuc: 3 control-plane HA + PostgreSQL HA + zone-aware dagitim ayni anda,
+  sorunsuz calisiyor.
