@@ -27,3 +27,13 @@
 - Bu degisiklik rolling restart tetikledi: once replikalar (postgres-lab-3,
   postgres-lab-2), en son primary (postgres-lab-1) yeniden baslatildi.
 - ContinuousArchiving condition'i True donuyor - WAL arsivleme calisiyor.
+
+## Zamanlanmis Backup - BASARILI
+- ScheduledBackup olusturuldu, ilk test 5 dakikalik cron ile yapildi.
+- Ilk otomatik backup basariyla completed oldu (dogrulandi).
+- Test sonrasi cron gunluk programa (03:00) cevrildi, production mantigina
+  uygun hale getirildi.
+- Not: schedule degistirildikten hemen sonra "Next Schedule Time" status'u
+  bir sure eski cron'a gore gorunebilir (status henuz yeniden hesaplanmamis),
+  bu bir hata degil, birkac dakika icinde kendiliginden duzeliyor.
+- retentionPolicy: "7d" zaten cluster'in plugin parametrelerinde tanimliydi.
