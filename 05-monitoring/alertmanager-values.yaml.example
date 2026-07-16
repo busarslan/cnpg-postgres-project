@@ -1,0 +1,19 @@
+alertmanager:
+  config:
+    global:
+      smtp_smarthost: 'smtp.gmail.com:587'
+      smtp_from: 'GMAIL_ADRESIN@gmail.com'
+      smtp_auth_username: 'GMAIL_ADRESIN@gmail.com'
+      smtp_auth_password: 'UYGULAMA_SIFRESI_BURAYA'
+      smtp_require_tls: true
+    route:
+      receiver: 'gmail-notifications'
+      group_by: ['alertname']
+      group_wait: 10s
+      group_interval: 1m
+      repeat_interval: 1h
+    receivers:
+      - name: 'gmail-notifications'
+        email_configs:
+          - to: 'GMAIL_ADRESIN@gmail.com'
+            send_resolved: true
