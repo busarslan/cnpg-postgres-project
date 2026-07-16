@@ -32,3 +32,11 @@
   "peer authentication failed" sorunu bu sefer yasanmadi.
 - Test komutu:
   kubectl exec -it postgres-lab-2 -n database -- psql -h 127.0.0.1 -U busarslan -d myapp -c "SELECT current_user, current_database();"
+
+## Kimlik Dogrulama Testi - BASARILI
+- busarslan kullanicisi ile TCP baglanti (127.0.0.1) basariyla calisti.
+- Baglanti TLSv1.3 ile sifrelenmis (SSL connection: TLSv1.3).
+- postgres superuser'ina hic ihtiyac duyulmadi - onceki lab denemesindeki
+  "peer authentication failed" sorunu bu sefer yasanmadi.
+- Test komutu:
+  kubectl exec -it postgres-lab-2 -n database -- psql -h 127.0.0.1 -U busarslan -d myapp -c "SELECT current_user, current_database();"
