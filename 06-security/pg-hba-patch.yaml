@@ -1,0 +1,8 @@
+# Bu dosya bir "patch" olarak uygulanir, standalone bir Cluster degildir.
+# Uygulama komutu:
+# kubectl patch cluster postgres-lab -n database --type merge -p "$(cat pg-hba-patch.yaml)"
+spec:
+  postgresql:
+    pg_hba:
+      - hostssl myapp busarslan all scram-sha-256
+      - hostnossl all all all reject
