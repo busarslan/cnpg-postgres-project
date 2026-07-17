@@ -11,7 +11,7 @@ spec:
       rules:
         - alert: PostgreSQLReplicationLagHigh
           expr: cnpg_pg_replication_lag > 30
-          for: 1m
+          for: 2m
           labels:
             severity: warning
           annotations:
