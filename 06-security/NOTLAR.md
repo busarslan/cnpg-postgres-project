@@ -10,3 +10,17 @@
   - sslmode=require -> basarili baglanti
 - Sonuc: TLS'siz baglanti KESIN olarak reddediliyor, TLS'li baglanti
   sorunsuz calisiyor.
+
+## NetworkPolicy - BASARILI
+- default-deny-all: database namespace'inde varsayilan olarak tum ingress
+  trafigi reddediliyor.
+- allow-postgres-access: sadece monitoring namespace'inden (port 9187,
+  Prometheus scrape) ve database namespace'i icinden (port 5432,
+  replikasyon + uygulama baglantisi) gelen trafige izin veriliyor.
+- Test 1: default namespace'inden postgres-lab-rw servisine baglanti
+  denemesi TIMEOUT ile sonuclandi (ag seviyesinde tamamen engellendi,
+  sifre bile sorulmadi).
+- Test 2: Prometheus monitoring hala calisiyor - targets sayfasinda UP.
+- Sonuc: NetworkPolicy, TLS + dogru kimlik bilgisi olsa bile izin
+  verilmeyen namespace'lerden gelen paketleri PostgreSQL'e ulasmadan
+  engelliyor - defense in depth katmani basariyla calisiyor.
