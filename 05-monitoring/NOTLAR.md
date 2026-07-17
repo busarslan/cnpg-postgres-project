@@ -14,3 +14,13 @@
 - ONEMLI DERS: kube-prometheus-stack gibi hazir chart'larin varsayilan
   config'lerini "reuse-values" ile ozellestirirken, chart'in kendi ic
   bagimliliklarini (bu ornekte "null" receiver) yanlislikla silmemek gerekir.
+
+## Gmail Bildirimi - Cluster Yeniden Kurulumu Sonrasi DOGRULANDI
+- Cluster'in tamamen yeniden kurulmasi sonrasi (bkz. 01-cluster-infra/
+  KURTARMA-NOTLARI.md), Gmail SMTP zinciri PostgreSQLReplicationLagHigh
+  alarm adiyla tekrar test edildi.
+- RECONCILED: True durumundayken gonderilen test alarmi basariyla Gmail'e
+  ulasti.
+- Sonuc: Tum Faz 5 (Prometheus + Grafana + Alertmanager + Gmail SMTP +
+  alarm kurallari) sifirdan, sadece Git'teki dosyalar kullanilarak
+  eksiksiz yeniden olusturulabildi - GitOps yaklasiminin degeri kanitlandi.
