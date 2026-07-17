@@ -24,3 +24,19 @@
 - Sonuc: NetworkPolicy, TLS + dogru kimlik bilgisi olsa bile izin
   verilmeyen namespace'lerden gelen paketleri PostgreSQL'e ulasmadan
   engelliyor - defense in depth katmani basariyla calisiyor.
+
+## Sealed Secrets - BASARILI
+- sealed-secrets-controller kuruldu (kube-system namespace).
+- kubeseal CLI kuruldu (v0.31.0).
+- postgres-credentials ve minio-creds secret'lari SealedSecret formatina
+  cevrildi (asimetrik sifreleme, sadece controller'in ozel anahtari
+  cozebilir).
+- Sealed halleri artik GUVENLE Git'e commit edilebilir - orijinal secret,
+  yaml.example dosyalari yerine artik gercek sealed-secrets/*.yaml
+  dosyalari kullanilabilir.
+- Onemli: SealedSecret sadece OLUSTURULDUGU cluster'da (ayni controller
+  anahtariyla) cozulebilir. Cluster yeniden kurulursa (bkz. KURTARMA-
+  NOTLARI.md), sealed-secrets-controller'in KENDI anahtari da degisir,
+  eski sealed dosyalari yeni cluster'da GECERSIZ olur - yeniden
+  sealanmalari gerekir. Bu nedenle orijinal .example dosyalari da
+  referans icin saklanmaya devam ediyor.
