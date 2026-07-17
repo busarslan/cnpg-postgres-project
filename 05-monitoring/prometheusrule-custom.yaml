@@ -15,5 +15,5 @@ spec:
           labels:
             severity: warning
           annotations:
-            summary: "PostgreSQL replikasyon gecikmesi yuksek ({{ \$labels.pod }})"
-            description: "{{ \$labels.pod }} instance'inda replikasyon gecikmesi 30 saniyeyi asti. Deger: {{ \$value }}s"
+            summary: "PostgreSQL replikasyon gecikmesi yuksek ({{ $labels.pod }})"
+            description: "{{ $labels.pod }} instance'inda replikasyon gecikmesi 30 saniyeyi asti. Deger: {{ $value }}s"
