@@ -30,3 +30,14 @@
 - Not: kubectl exec -i ile stdin'den SQL dosyasi gonderilirken psql'in
   interaktif sifre sormasi CALISMIYOR (stdin zaten dosyaya yonlendirilmis
   oluyor) - PGPASSWORD ortam degiskeni ile bu sorun asildi.
+
+## Iliskisel Butunluk Testi - BASARILI
+- 2 personel, 1 ekipman + ekskavator alt tipi, 1 vardiya, 1 ekip
+  kaydi eklendi.
+- Ekipman + Ekskavator JOIN'i basariyla calisti - table-per-type
+  alt tip deseni dogrulandi.
+- Vardiya, ISG sorumlusu ve ekipmani dogru FK'lerle bagladi.
+- Ekip JOIN sorgusu (ekip + personel + vardiya) anlamli, dogru
+  sonuc uretti: "Ahmet Yilmaz, Sabah Vardiyasi'nda operator".
+- Sonuc: Sema sadece tablo yapisi olarak degil, iliskisel butunluk
+  (foreign key + join) acisindan da dogru calisiyor.
