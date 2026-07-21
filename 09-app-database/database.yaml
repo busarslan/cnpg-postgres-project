@@ -1,0 +1,10 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: saha-operasyon-db
+  namespace: database
+spec:
+  name: saha_operasyon
+  owner: busarslan
+  cluster:
+    name: postgres-lab
