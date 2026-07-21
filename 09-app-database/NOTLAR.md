@@ -41,3 +41,23 @@
   sonuc uretti: "Ahmet Yilmaz, Sabah Vardiyasi'nda operator".
 - Sonuc: Sema sadece tablo yapisi olarak degil, iliskisel butunluk
   (foreign key + join) acisindan da dogru calisiyor.
+
+## PITR Testi - Gercek Uygulama Verisiyle - BASARILI
+- Manuel backup alindi (saha-operasyon-backup-1).
+- ekip tablosuna yeni bir kayit (isg_uzmani_sahada) eklendi, tam zaman
+  damgasi alindi.
+- Kayit DELETE ile kasitli silindi.
+- recoveryTarget.targetTime ile postgres-restored-saha adinda yeni
+  bir cluster'a restore edildi.
+- Restore sirasinda gecici bir "leader election lost" / API server
+  timeout hatasi yasandi (hem postgres-lab hem restore cluster'i
+  etkiledi) - ama TUM POD'LAR "Running" durumda kaldi, PostgreSQL
+  surecinin kendisi hic durmadi. ~30 saniye sonra operatör kendi
+  kendini topladi, her iki cluster da "Cluster in healthy state"e
+  dondu.
+- Restore edilen cluster'da ekip tablosu kontrol edildi: SILINEN
+  KAYIT (isg_uzmani_sahada) EKSIKSIZ GERI GELDI, foreign key'ler
+  (personel_id, vardiya_id) dahil tutarliydi.
+- Sonuc: PITR mekanizmasi, gercek, iliskisel, cok tablolu bir
+  uygulama semasiyla basariyla dogrulandi.
+- Test sonrasi postgres-restored-saha cluster'i temizlendi.
