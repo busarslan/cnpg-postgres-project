@@ -61,3 +61,21 @@
 - Sonuc: PITR mekanizmasi, gercek, iliskisel, cok tablolu bir
   uygulama semasiyla basariyla dogrulandi.
 - Test sonrasi postgres-restored-saha cluster'i temizlendi.
+
+## Seed Data - Rastgele FK Secimi Hatasi ve Duzeltmesi
+- ID'ler once array_agg() ile tek bir diziye toplanip
+  (WITH pp AS (SELECT array_agg(personel_id) ids FROM personel)),
+  rastgele indeksleme islemi doğrudan ana sorgunun SELECT listesinde
+  (hicbir alt sorgu olmadan) yapildi:
+  pp.ids[1+floor(random()*array_length(pp.ids,1))::int]
+  Bu, target list ifadesi oldugu icin her cikti satirinda ayri ayri
+  degerlendiriliyor ve gercekten farkli rastgele degerler uretiyor.
+- Dogrulama: ekip tablosunda 150 kayitta 49 farkli personel, 67 farkli
+  vardiya bulunuyor (cesitlilik kontrol sorgusuyla kanitlandi).
+- ONEMLI DERS: PostgreSQL'de "rastgele bir satir sec" islemini
+  cok satirli bir INSERT...SELECT icinde yaparken, iliskisiz alt
+  sorgular (LATERAL dahil) guvenilir degildir. Array-agg + dogrudan
+  indeksleme deseni tercih edilmeli.
+- Betik ayrica TRUNCATE ... RESTART IDENTITY CASCADE ile basa
+  eklendi, boylece tekrar calistirildiginda onceki (hatali) veriyi
+  temizleyip sifirdan basliyor.
