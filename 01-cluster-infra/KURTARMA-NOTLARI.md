@@ -53,3 +53,24 @@ Bu riski azaltir ama garanti etmez. Kalici cozum: Faz 9'da buluta tasima.
 ## Onemli Eksik
 MinIO YAML'lari henuz ayri bir dosyaya kaydedilmedi (04-backup/minio.yaml
 gibi), hala elle/inline yaziliyor. Bunu yapmak bir sonraki oncelik olmali.
+
+## Kok Sebep Bulundu ve Kalici Cozuldu - 2026-07-22
+- yasanan "her docker stop/start sonrasi kube-apiserver
+  crash-loop" sorununun kok sebebi bulundu: kind agindaki
+  (172.18.0.0/16) container'lar dinamik IP aliyor, ama etcd'nin
+  peer sertifikalari ilk kurulumdaki IP'lere sabit. IP degisince
+  "remote error: tls: bad certificate" hatasiyla etcd quorum
+  kurulamiyor, apiserver baslayamiyor.
+- Teshis: crictl logs (etcd) ile "rejected connection on peer
+  endpoint ... bad certificate" hatasi bulundu. openssl x509 ile
+  sertifikadaki IP (172.18.0.7) ile docker inspect ile gercek IP
+  (172.18.0.5) karsilastirildi, uyusmadigi goruldu.
+- Cozum: fix-static-ips.sh betigi ile her node'un IP'si Docker
+  agina kalici olarak sabitlendi (docker network disconnect +
+  connect --ip). docker stop/start dongusu ile TEST EDILDI,
+  IP'ler ayni kaldi, cluster sorunsuz Ready oldu.
+- ONEMLI: Bu betik sadece MEVCUT cluster icin gecerli IP'leri
+  iceriyor. Eger cluster SIFIRDAN yeniden olusturulursa (kind
+  delete + kind create), node'lar farkli IP alabilir - bu durumda
+  betikteki IP degerlerinin guncellenmesi gerekir (betigin
+  basindaki not'a bakin).
