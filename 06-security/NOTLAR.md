@@ -40,3 +40,49 @@
   eski sealed dosyalari yeni cluster'da GECERSIZ olur - yeniden
   sealanmalari gerekir. Bu nedenle orijinal .example dosyalari da
   referans icin saklanmaya devam ediyor.
+
+## Sifre Degisikligi Sonrasi Yasanan Sorun
+
+### 1. Sealed Secrets Controller Eksikti
+- Onceki bir cluster yeniden kurulumunda sealed-secrets-controller
+  tekrar kurulmamisti.
+- Cozum: kubectl apply ile controller.yaml tekrar kuruldu.
+- NOT: Yeni controller kuruldugunda yeni bir sifreleme anahtari
+  uretilir - eski sealed dosyalarin hicbiri artik gecerli olmuyor,
+  hepsinin yeniden "sealed" edilmesi gerekiyor.
+
+### 2. SealedSecret, Elle Olusturulmus Secret'i Guncelleyemedi
+- Hata: "Resource minio-creds already exists and is not managed by
+  SealedSecret"
+- Kok sebep: minio-creds secret'i daha once kubectl create secret ile
+  elle olusturulmustu (Faz 4'te). SealedSecrets, sahipligini kendisinde
+  gormedigi bir Secret'i güvenlik geregi guncelleyemiyor (birinin
+  rastgele bir SealedSecret ile baskasinin Secret'ini ele gecirmesini
+  onlemek icin).
+- Cozum: kubectl delete secret minio-creds -n database ile eski Secret
+  silindi, SealedSecret controller'i onu kendi yonetiminde sifirdan
+  yeniden olusturdu.
+- ONEMLI DERS: Bir Secret'i SealedSecrets'a devretmek istiyorsan,
+  once elle olusturulani silmen, sonra SealedSecret'in olusturmasina
+  izin vermen gerekiyor.
+
+### 3. postgres-lab-1 Kisir Donguye Girdi
+- Sifre/secret degisikligi + controller restart'lari sirasinda
+  postgres-lab-1, WAL/history dosyasini arsivden restore etmeye
+  calisirken (restored log file "00000002.history" from archive)
+  liveness/readiness probe'lari surekli timeout aldi (API server
+  gecici yavasligi yuzunden), bu da container'in surekli oldurulup
+  yeniden baslatilmasina, kurtarma surecinin hic tamamlanamamasina
+  yol acti.
+- Cozum: kubectl delete pod postgres-lab-1 -n database ile pod
+  sifirdan yeniden olusturuldu, bu sefer sorunsuz senkronize oldu.
+- Bu, primary olmayan bir instance'da yasandigi icin HA'yi tehlikeye
+  atmadi (postgres-lab-2 primary olarak saglikli kaldi).
+
+### Sifre Degisikligi - BASARIYLA TAMAMLANDI
+- PostgreSQL busarslan kullanicisinin sifresi ALTER ROLE ile
+  degistirildi.
+- MinIO root sifresi de degistirildi, minio.yaml, sealed secret'lar
+  ve dogrudan Secret'lar tum zincirde tutarli hale getirildi.
+- Sonuc: ContinuousArchiving: True, Cluster in healthy state (3/3),
+  guvenlik acigi Git'ten temizlendi.
