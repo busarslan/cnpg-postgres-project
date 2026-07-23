@@ -24,3 +24,13 @@
 - Sonuc: Tum Faz 5 (Prometheus + Grafana + Alertmanager + Gmail SMTP +
   alarm kurallari) sifirdan, sadece Git'teki dosyalar kullanilarak
   eksiksiz yeniden olusturulabildi - GitOps yaklasiminin degeri kanitlandi.
+
+## Alarm Gurultusu Azaltma ve Mail Formatlama - BASARILI
+- KubeSchedulerInstanceUnreachable / KubeSchedulerDown alarmlari,
+  kind ortaminda scheduler metrik endpoint'inin disaridan erisilemez
+  olmasi nedeniyle surekli yanlis pozitif uretiyordu.
+- Once silindi, sonra kalici
+  cozum icin alertmanager-values.yaml'a "kubeScheduler: enabled:
+  false" eklendi.
+- Alertmanager mail sablonu, email_configs altina "headers.subject"
+  ve "html" alanlari eklenerek ozellestirildi.

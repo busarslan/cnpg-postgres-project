@@ -1,10 +1,13 @@
+kubeScheduler:
+  enabled: false
+
 alertmanager:
   config:
     global:
       smtp_smarthost: 'smtp.gmail.com:587'
       smtp_from: 'GMAIL_ADRESIN@gmail.com'
-      smtp_auth_username: 'GMAIL_ADRESIN@gmail.com'
-      smtp_auth_password: 'UYGULAMA_SIFRESI_BURAYA'
+      smtp_auth_username: '*************@gmail.com'
+      smtp_auth_password: '********************'
       smtp_require_tls: true
     route:
       receiver: 'gmail-notifications'
@@ -19,6 +22,17 @@ alertmanager:
     receivers:
       - name: 'gmail-notifications'
         email_configs:
-          - to: 'GMAIL_ADRESIN@gmail.com'
+          - to: '**********@gmail.com'
             send_resolved: true
+            headers:
+              subject: '{{ if eq .Status "firing" }}ALARM{{ else }}Cozuldu{{ end }}: {{ .CommonLabels.alertname }}'
+            html: |
+              {{ range .Alerts }}
+              <h3>{{ .Labels.alertname }}</h3>
+              <p><b>Durum:</b> {{ .Status }}</p>
+              <p><b>Onem:</b> {{ .Labels.severity }}</p>
+              <p><b>Aciklama:</b> {{ .Annotations.description }}</p>
+              <p><b>Pod/Instance:</b> {{ .Labels.pod }} ({{ .Labels.instance }})</p>
+              <hr>
+              {{ end }}
       - name: 'null'
